@@ -1,0 +1,25 @@
+def transcribe_audio_to_text(audio_path, subscription_key, region):
+    # print(f"Transcribing audio with subscription_key={subscription_key} and region={region}")
+
+    try:
+        speech_config = speechsdk.SpeechConfig(subscription=subscription_key, region=region)
+        audio_config = speechsdk.audio.AudioConfig(filename=audio_path)
+        recognizer = speechsdk.SpeechRecognizer(speech_config=speech_config, audio_config=audio_config)
+        result = recognizer.recognize_once()
+
+        if result.reason == speechsdk.ResultReason.RecognizedSpeech:
+            print(f"Recognized: {result.text}")
+            return result.text
+            # add save as a txt file option
+        elif result.reason == speechsdk.ResultReason.NoMatch:
+            print("No speech could be recognized")
+        elif result.reason == speechsdk.ResultReason.Canceled:
+            cancellation_details = result.cancellation_details
+            print(f"Speech Recognition canceled: {cancellation_details.reason}")
+            if cancellation_details.error_details:
+                print(f"Error details: {cancellation_details.error_details}")
+
+    except Exception as e:
+        print(f"Exception during transcription: {e}")
+
+    return None
